@@ -2,6 +2,11 @@
 function handleKeyboardKeyUpEvent(event) {
     const playerPressed = event.key;
 
+    //stop the game if pressed Escape
+    if (playerPressed === "Escape") {
+        gameOver();
+    }
+
     // get the expected key to  press
     const currentAlphabetElement = document.getElementById("current-alphabet");
     const currentAlphabet = currentAlphabetElement.innerText;
@@ -9,31 +14,22 @@ function handleKeyboardKeyUpEvent(event) {
 
     // check matched or not
     if (playerPressed === expectedAlphabet) {
-        // update score
-        const currentScoreElement = document.getElementById("current-score");
-        const currentScoreText = currentScoreElement.innerText;
-        const currentScore = parseInt(currentScoreText);
-
-        // increase score
-        const newScore = currentScore + 1;
-
-        // show the updated score
-        currentScoreElement.innerText = newScore;
+        const currentScore = getElementValueById("current-score");
+        const updatedScore = currentScore + 1;
+        setElementValueById("current-score", updatedScore);
 
         // start a new round
         removeBackgroundColorById(expectedAlphabet);
         continueGame();
     } else {
-    //    get the current life number
-        const currentLifeElement = document.getElementById("current-life");
-        const currentLifeText = currentLifeElement.innerText;
-        const currentLife = parseInt(currentLifeText);
 
-    // reduce the life count
-        const newLife = currentLife - 1;
+        const currentLife = getElementValueById("current-life");
+        const updatedLife = currentLife - 1;
+        setElementValueById("current-life", updatedLife);
 
-    // display the updated life count
-        currentLifeElement.innerText = newLife;
+        if (updatedLife === 0) {
+            gameOver();
+        }
     }
 }
 // capture keyboard key press
@@ -50,12 +46,31 @@ function continueGame() {
     // set background color
     setBackgroundColorById(alphabet);
 
-
 }
 
-
 function play() {
+    //hide everything and show only the playground
     hideElementById("home-screen");
+    hideElementById("final-score");
     showElementById("play-ground");
+
+    //reset score and life
+    setElementValueById("current-life", 5);
+    setElementValueById("current-score", 0);
+
     continueGame();
+}
+
+function gameOver() {
+    hideElementById("play-ground");
+    showElementById("final-score");
+
+    //update final score
+    const lastScore = getElementValueById("current-score");
+    setElementValueById("last-score", lastScore);
+
+    //clear the last selected alphabet highlight
+    const currentAlphabet = getElementTextById("current-alphabet");
+    removeBackgroundColorById(currentAlphabet);
+
 }
